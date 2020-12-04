@@ -1,0 +1,11 @@
+example\main.class
+example\model\User.class
+example\dao\UserDaoImpl.class
+example\dao\CrudDao.class
+example\config\SpringConfig.class
+example\MyMethod.class
+example\controllers\UsersController.class
+example\User1.class
+example\util\HibernateUtil.class
+example\config\MySpringMvcDispatcherSerlvetIntitializer.class
+example\dao\UserDao.class
