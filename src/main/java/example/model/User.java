@@ -3,9 +3,7 @@ package example.model;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +13,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 1, max = 30, message = "Name should be between 1 and 30 characters")
@@ -25,8 +23,10 @@ public class User {
     @Size(min = 1, max = 30, message = "Name should be between 1 and 30 characters")
     private String password;
 
-    //    @Email(message = "Email should be valid")
+        @Email(message = "Email should be valid")
 //    @NotEmpty(message = "Email should not be empty")
+    @Size(min = 1, max = 50, message = "E-mail should be between 1 and 50 characters")
+
     private String email;
 
     private String color;
@@ -103,9 +103,6 @@ public class User {
         return role;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public void setLogin(String login) {
         this.login = login;

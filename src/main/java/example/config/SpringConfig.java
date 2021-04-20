@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -35,7 +34,6 @@ public class SpringConfig implements WebMvcConfigurer {
         templateResolver.setPrefix("/WEB-INF/views/");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode("HTML5");
-
         return templateResolver;
     }
 
@@ -53,18 +51,12 @@ public class SpringConfig implements WebMvcConfigurer {
         resolver.setTemplateEngine(templateEngine());
         registry.viewResolver(resolver);
     }
-//
-//    @Override
-//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry.addResourceHandler("/resources/**")
-//                .addResourceLocations("/resources/");
-//    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/css/**").addResourceLocations("/css/");
-        //registry.addResourceHandler("/*.html").addResourceLocations("/WEB-INF/");
     }
+
 }
 
 

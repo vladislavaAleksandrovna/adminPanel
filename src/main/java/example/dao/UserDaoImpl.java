@@ -1,65 +1,58 @@
 package example.dao;
 
 import example.model.User;
-import example.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.stream.Stream;
 
-@Component
+@Repository
 public class UserDaoImpl implements UserDao {
 
     private SessionFactory sessionFactory;
 
-    public UserDaoImpl() {
-        sessionFactory = HibernateUtil.getSessionFactory();
-
+    @Autowired
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
-    public boolean isExists(String login) {
-        Session session = sessionFactory.openSession();
+    public boolean isExist(String login) {
+        Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery(User.class);
         Root<User> root = cq.from(User.class);
         Query query = session.createQuery(cq);
         List<User> userEntityList = query.getResultList();
         boolean result = userEntityList.stream().anyMatch(user -> user.getLogin().equals(login));
-        session.close();
         return result;
     }
 
     @Override
-    public void create (User user) {
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
+    public void create(User user) {
+        Session session = sessionFactory.getCurrentSession();
         session.save(user);
-        session.getTransaction().commit();
-        session.close();
     }
 
     @Override
     public void delete(Integer id) {
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
+        Session session = sessionFactory.getCurrentSession();
         User userEntity = session.get(User.class, id);
         session.delete(userEntity);
-        session.getTransaction().commit();
-        session.close();
     }
 
     @Override
     public void update(String login, String color) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery(User.class);
         Root<User> root = cq.from(User.class);
@@ -67,110 +60,75 @@ public class UserDaoImpl implements UserDao {
         List<User> userEntityList = query.getResultList();
         User userEntity = userEntityList.stream().filter(user -> user.getLogin().equals(login)).findAny().get();
         userEntity.setColor(color);
-        session.beginTransaction();
-        session.update(color,userEntity);
-        session.getTransaction().commit();
-        session.close();
+        session.update(color, userEntity);
     }
 
 
     @Override
-    public boolean isExists(String login,String password) {
-        Session session = sessionFactory.openSession();
+    public boolean isExist(String login, String password) {
+        Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery(User.class);
         Root<User> root = cq.from(User.class);
         Query query = session.createQuery(cq);
         List<User> userEntityList = query.getResultList();
         User userEmpty = new User();
-        String passwordUser = userEntityList.stream().filter(user->user.getLogin().equals(login)).findAny().orElse(userEmpty).getPassword();
+        String passwordUser = userEntityList.stream().filter(user -> user.getLogin().equals(login)).findAny().orElse(userEmpty).getPassword();
         boolean result = false;
-        if(passwordUser!=null) {
+        if (passwordUser != null) {
             if (passwordUser.equals(password)) {
                 return result = true;
             }
         }
-        session.close();
         return result;
     }
 
     @Override
     public String getColorUser(String login) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery(User.class);
         Root<User> root = cq.from(User.class);
         Query query = session.createQuery(cq);
         List<User> userEntityList = query.getResultList();
-        String color = userEntityList.stream().filter(user->user.getLogin().equals(login)).findAny().get().getColor();
-        session.close();
+        String color = userEntityList.stream().filter(user -> user.getLogin().equals(login)).findAny().get().getColor();
         return color;
     }
+
     @Override
-    public String getEmailUser(String login){
-        Session session = sessionFactory.openSession();
+    public String getEmailUser(String login) {
+        Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery(User.class);
         Root<User> root = cq.from(User.class);
         Query query = session.createQuery(cq);
         List<User> userEntityList = query.getResultList();
         User userEmpty = new User();
-        String email = userEntityList.stream().filter(user->user.getLogin().equals(login)).findAny().orElse(userEmpty).getEmail();
-        session.close();
+        String email = userEntityList.stream().filter(user -> user.getLogin().equals(login)).findAny().orElse(userEmpty).getEmail();
         return email;
     }
 
     @Override
     public List<User> findAll() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery(User.class);
         Root<User> root = cq.from(User.class);
         cq.select(root);
         Query query = session.createQuery(cq);
         List<User> userEntityList = query.getResultList();
-        session.close();
         return userEntityList;
     }
 
     @Override
     public String getRoleUser(String login) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery(User.class);
         Root<User> root = cq.from(User.class);
         Query query = session.createQuery(cq);
         List<User> userEntityList = query.getResultList();
         String roleUser = userEntityList.stream().filter(user -> user.getLogin().equals(login)).findAny().get().getRole();
-        session.close();
         return roleUser;
-    }
-
-
-    @Override
-    public Integer findById(Integer id) {
-        Session session = sessionFactory.openSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery cq = cb.createQuery(User.class);
-        Root<User> root = cq.from(User.class);
-        Query query = session.createQuery(cq);
-        List<User> userEntityList = query.getResultList();
-        User userEmpty = new User();
-        Integer idUser = userEntityList.stream().filter(user -> user.getId().equals(id)).findAny().orElse(userEmpty).getId();
-        session.close();
-        return idUser;
-    }
-
-    public Integer getId (String login) {
-        Session session = sessionFactory.openSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery cq = cb.createQuery(User.class);
-        Root<User> root = cq.from(User.class);
-        Query query = session.createQuery(cq);
-        List<User> userEntityList = query.getResultList();
-        User userEmpty = new User();
-        Integer id = userEntityList.stream().filter(user -> user.getLogin().equals(login)).findAny().orElse(userEmpty).getId();
-        session.close();
-        return id;
     }
 }
